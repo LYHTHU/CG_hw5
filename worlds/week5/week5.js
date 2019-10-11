@@ -305,6 +305,13 @@ async function setup(state) {
                 state.uProjLoc         = gl.getUniformLocation(program, 'uProj');
                 state.uTimeLoc         = gl.getUniformLocation(program, 'uTime');
                 state.uViewLoc         = gl.getUniformLocation(program, 'uView');
+
+                state.lightsLoc = [];                
+                for (var i = 0; i < 3; i++) {
+                    state.lightsLoc[i] = {};
+                    state.lightsLoc[i].src = gl.getUniformLocation(program, 'lights[' + i + '].src');
+                    state.lightsLoc[i].rgb = gl.getUniformLocation(program, 'lights[' + i + '].rgb');
+                }
             } 
         },
         {
@@ -419,8 +426,18 @@ function onStartFrame(t, state) {
     if (!state.tStart)
         state.tStart = t;
     state.time = (t - state.tStart) / 1000;
+    var time = state.time;
 
     gl.uniform1f (state.uTimeLoc  , state.time);
+
+    gl.uniform3fv(state.lightsLoc[0].src, [2.*Math.sin(time), 2.*Math.cos(time), -.5]);
+    gl.uniform3fv(state.lightsLoc[0].rgb, [1., 1., 1.]);
+
+    gl.uniform3fv(state.lightsLoc[1].src, [-1.5*Math.cos(time), 0., 1.5*Math.sin(time)]);
+    gl.uniform3fv(state.lightsLoc[1].rgb, [1., 1., 1.]);
+
+    gl.uniform3fv(state.lightsLoc[2].src, [0., 1.*Math.cos(time), 1.*Math.sin(time)]);
+    gl.uniform3fv(state.lightsLoc[2].rgb, [1., 1., 1.]);
 
 
     // uCursor WILL GO FROM -1 TO +1 IN xy, WITH z = 0 FOR MOUSE UP, 1 FOR MOUSE DOWN.

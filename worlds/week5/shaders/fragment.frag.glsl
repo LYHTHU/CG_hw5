@@ -11,10 +11,58 @@ in vec3 vNor;          // NORMAL
 
 out vec4 fragColor;    // RESULT WILL GO HERE
 
+const int NL = 3;
+
+struct Light{
+    vec3 rgb; 
+    vec3 src; 
+}; 
+
+struct Ray{
+    vec3 src; 
+    vec3 dir; 
+}; 
+
+uniform Light lights[NL];
+
+Ray get_ray(vec3 p_src, vec3 p_dest){
+    Ray ret; 
+    ret.src = p_src; 
+    ret.dir = normalize(p_dest - p_src); 
+    return ret; 
+}
+
+vec3 get_normal(vec3 pos) { 
+    // TODO
+    return normalize(vec3(1., 0., 0.));
+}
+
+// vec3 phong(vec3 inter_point) {
+//     vec3 N=get_normal(inter_point);
+//     vec3 color=uMaterials[index].ambient;
+//     for(int j=0;j<NL;j++){
+//         Ray L = get_ray(inter_point,lights[j].src);
+//         Ray E = get_ray(inter_point,eye);
+//         Ray R = reflect_ray(L,N);
+//         color += lights[j].rgb*(uMaterials[index].diffuse*max(0.,dot(N,L.dir)));
+//         float s;
+//         float er = dot(E.dir,R.dir);
+//         if(er > 0.){
+//             s = max(0.,exp(uMaterials[index].power*log(er)));
+//         }
+//         else{
+//             s = 0.;
+//         }
+//         color += lights[j].rgb*uMaterials[index].specular*s;
+//     }
+//     return color;
+// }
+
 void main() {
     vec3 lDir  = vec3(.57,.57,.57);
     vec3 shade = vec3(.1,.1,.1) + vec3(1.,1.,1.) * max(0., dot(lDir, normalize(vNor)));
     vec3 color = shade;
+    // only changed if light is intersect to the object    
 
     // HIGHLIGHT CURSOR POSITION WHILE MOUSE IS PRESSED
 
