@@ -3,6 +3,192 @@
 
 const VERTEX_SIZE = 6; // EACH VERTEX CONSISTS OF: x,y,z, ny,ny,nz
 
+class Mat {
+    constructor(height, width, v = 0.0) {
+        this.w = width;
+        this.h = height;
+        this._mat = [];
+        for (var i = 0; i < this.h * this.w; i++) {
+            this._mat[i] = v;
+        }
+    }
+
+    size() {
+        return [this.h, this.w];
+    }
+
+    elem(i, j) {
+        if (i >= 0 && i < this.h && j >= 0 && j < this.w) {
+            var idx = j * this.h + i;
+            return this._mat[idx];
+        }
+    }
+
+    set(i, j, v) {
+        if (i >= 0 && i < this.h && j >= 0 && j < this.w) {
+            var idx = j * this.h + i;
+            this._mat[idx] = v;
+        }
+    }
+
+    transpose() {
+        let ret = new Mat(this.w, this.h, 0.0);
+        for (var i = 0; i < this.h; i++) {
+            for (var j = 0; j < this.w; j++) {
+                ret.set(j, i, this.elem(i, j));
+            }
+        }
+        return ret;
+    }
+
+    t() {
+        return this.transpose();
+    }
+
+    print() {
+        var str = "";
+        for (var i = 0; i < this.h; i++) {
+            for (var j = 0; j < this.w; j++) {
+                str = str + this.elem(i, j) + " ";
+            }
+            str += "\n";
+        }
+        console.log(str);
+    }
+
+    // col by col
+    toList() {
+        return this._mat;;
+    }
+
+    // col by col
+    static fromList(height, width, vector) {
+        if (vector.length != height * width) {
+            throw "Dimensions do not match!";
+        }
+        let ret = new Mat(height, width, 0.);
+        ret._mat = vector;
+        return ret;
+    }
+
+    static diag(n, vector) {
+        if (vector.length != n) {
+            throw "Dimensions do not match!";
+        }
+        let ret = new Mat(n, n, 0.);
+        for (var i = 0; i < n; i++) {
+            ret.set(i, i, vector[i]);
+        }
+        return ret;
+    }
+
+
+    static mat_add(A, B) {
+        if (A.w != B.w || A.h != B.h) {
+            throw "Dimensions do not match!";
+        }
+
+        let C = new Mat(A.h, B.w, 0.0);
+        for (var i = 0; i < A.h; ++i) {
+            for (var j = 0; j < B.w; ++j) {
+                C.set(i, j, A.elem(i, j) + B.elem(i, j));
+            }
+        }
+        return C;
+    }
+
+    static multiply(A, B) {
+        if (A.w != B.h) {
+            throw "Dimensions do not match!";
+        }
+
+        let C = new Mat(A.h, B.w, 0.0);
+
+        for (var i = 0; i < A.h; ++i) {
+            for (var j = 0; j < B.w; ++j) {
+                var tmp = 0.0;
+                for (var k = 0; k < A.w; ++k) {
+                    tmp += A.elem(i, k) * B.elem(k, j);
+                }
+                C.set(i, j, tmp);
+            }
+        }
+        return C;
+    }
+
+    inv() {
+        let src = this._mat;
+        let dst = [], det = 0, cofactor = (c, r) => {
+            let s = (i, j) => src[c + i & 3 | (r + j & 3) << 2];
+            return (c + r & 1 ? -1 : 1) * ((s(1, 1) * (s(2, 2) * s(3, 3) - s(3, 2) * s(2, 3)))
+                - (s(2, 1) * (s(1, 2) * s(3, 3) - s(3, 2) * s(1, 3)))
+                + (s(3, 1) * (s(1, 2) * s(2, 3) - s(2, 2) * s(1, 3))));
+        }
+        for (let n = 0; n < 16; n++) dst.push(cofactor(n >> 2, n & 3));
+        for (let n = 0; n < 4; n++) det += src[n] * dst[n << 2];
+        for (let n = 0; n < 16; n++) dst[n] /= det;
+
+        let ret = Mat.fromList(4, 4, dst);
+        // ret._mat = inverse(this._mat);
+        return ret;
+    }
+
+    static identity() {
+        return Mat.diag(4, [1, 1, 1, 1]);
+    }
+
+    static translate(x, y, z) {
+        let trans = Mat.identity();
+        trans.set(0, 3, x);
+        trans.set(1, 3, y);
+        trans.set(2, 3, z);
+        return trans;
+    }
+
+    static scale(x, y, z) {
+        return Mat.diag(4, [x, y, z, 1]);
+    }
+
+    static perspective(x, y, z, w) {
+        let trans = Mat.identity();
+        trans.set(3, 0, x);
+        trans.set(3, 1, y);
+        trans.set(3, 2, z);
+        trans.set(3, 3, w);
+        return trans;
+    }
+
+    static rotateX(th) {
+        var c = Math.cos(th);
+        var s = Math.sin(th);
+
+        let trans = Mat.diag(4, [1, c, c, 1]);
+        trans.set(1, 2, -s);
+        trans.set(2, 1, s);
+        return trans;
+    }
+
+    static rotateY(th) {
+        var c = Math.cos(th);
+        var s = Math.sin(th);
+
+        let trans = Mat.diag(4, [c, 1, c, 1]);
+        trans.set(0, 2, s);
+        trans.set(2, 0, -s);
+        return trans;
+    }
+
+    static rotateZ(th) {
+        var c = Math.cos(th);
+        var s = Math.sin(th);
+
+        let trans = Mat.diag(4, [c, c, 1, 1]);
+        trans.set(0, 1, -s);
+        trans.set(1, 0, s);
+        return trans;
+    }
+}
+
 
  //////////////////////////////////////////////////////////////////
 //                                                                //
@@ -176,12 +362,12 @@ async function setup(state) {
 //                                                                   //
  /////////////////////////////////////////////////////////////////////
 
-let identity = ()       => [];
-let rotateX = t         => [];
-let rotateY = t         => [];
-let rotateZ = t         => [];
-let scale = (x,y,z)     => [];
-let translate = (x,y,z) => [];
+let identity = ()       => Mat.identity().toList();
+let rotateX = t         => Mat.rotateX(t).toList();
+let rotateY = t         => Mat.rotateY(t).toList();
+let rotateZ = t         => Mat.rotateZ(t).toList();
+let scale = (x,y,z)     => Mat.scale(x, y, z).toList();
+let translate = (x,y,z) => Mat.translate(x, y, z).toList();
 
 let inverse = src => {
   let dst = [], det = 0, cofactor = (c, r) => {
