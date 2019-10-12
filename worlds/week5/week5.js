@@ -450,13 +450,6 @@ function onStartFrame(t, state) {
     gl.uniform3fv(state.eyeLoc, [0., 0., 5.]);
     gl.uniform3fv(state.screenCenterLoc, [0., 0., 2.5]);
 
-    gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.05,0.05,0.05]);
-    gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.01,0.01,0.01]);
-    gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
-    gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
-    gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
-    gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
-    gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
     gl.uniform3fv(state.lightsLoc[0].src, [2.*Math.sin(time), 2.*Math.cos(time), -.5]);
     gl.uniform3fv(state.lightsLoc[0].rgb, [1., 1., 1.]);
@@ -509,20 +502,38 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
           m.rotateY(-side + .5 * theta);
           m.translate(side * .3,0,0);
           m.save();
-             m.scale(.3,.05,.05);
-             gl.uniform3fv(state.uColorLoc, state.color0 );
-             gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-             gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+            m.scale(.3,.05,.05);
+            gl.uniform3fv(state.uColorLoc, state.color0 );
+
+            gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.05,0.05,0.05]);
+            gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.01,0.01,0.01]);
+            gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
+            gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
+            gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
+            gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
+            gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
+
+            gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
+            gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
           m.restore();
 
           m.translate(side * .3,0,0);
           m.rotateZ(theta);              // ELBOW
           m.translate(side * .3,0,0);
           m.save();
-             m.scale(.3,.05,.05);
-             gl.uniform3fv(state.uColorLoc, state.color0 );
-             gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-             gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+            m.scale(.3,.05,.05);
+            gl.uniform3fv(state.uColorLoc, state.color0 );
+        
+            gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.03, 0.1, 0.0]);
+            gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.05, 0.25, 0.0]);
+            gl.uniform3fv(state.uMaterialsLoc[0].specular, [1.,1.,1.]);
+            gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
+            gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [0.5, 0.5, 0.5]);
+            gl.uniform3fv(state.uMaterialsLoc[0].transparent, [1.0, 1.0, 1.0]);
+            gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
+            
+            gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
+            gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
           m.restore();
        m.restore();
     }

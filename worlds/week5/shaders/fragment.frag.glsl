@@ -89,18 +89,20 @@ vec3 phong(vec3 inter_point, int index) {
 }
 
 void main() {
-    vec3 lDir  = vec3(.57,.57,.57);
-    vec3 shade = vec3(.1,.1,.1) + vec3(1.,1.,1.) * max(0., dot(lDir, normalize(vNor)));
+    // vec3 lDir  = vec3(.57,.57,.57);
+    // vec3 shade = vec3(.1,.1,.1) + vec3(1.,1.,1.) * max(0., dot(lDir, normalize(vNor)));
     // vec3 color = shade;
     vec3 color = phong(vPos, 0);
     // only changed if light is intersect to the object    
 
     // HIGHLIGHT CURSOR POSITION WHILE MOUSE IS PRESSED
 
-    if (uCursor.z > 0. && min(abs(uCursor.x - vXY.x), abs(uCursor.y - vXY.y)) < .01)
-          color = vec3(1.,1.,1.);
+    // if (uCursor.z > 0. && min(abs(uCursor.x - vXY.x), abs(uCursor.y - vXY.y)) < .01)
+    //       color = vec3(1.,1.,1.);
 
-    fragColor = vec4(sqrt(color * uColor), 1.0);
+    // Using way like uColor to set the uMaterials
+
+    fragColor = vec4(sqrt(color), 1.0);
 }
 
 
