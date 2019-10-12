@@ -229,12 +229,87 @@ let createCubeVertices = () => {
       for (let i = 0 ; i < P.length ; i++)
          P[i] = [P[i][1],P[i][2],P[i][0], P[i][4],P[i][5],P[i][3]];
    }
-
    return v;
 }
 
-let cubeVertices = createCubeVertices();
+let vecLength = a => {
+    let len = 0;
+    for (let i = 0 ; i < a.length ; i++) {
+        len += a[i]**2; 
+    }
+    len = Math.sqrt(len);
+    return len;
+}
 
+let normalize = a => {
+    let len = vecLength(a);
+    if (len <= 0) throw "0 vector!";
+    let ret = [];
+    
+    for (let i = 0; i < a.length; i++) {
+        ret.push(a[i] / len);
+    }
+    return ret;
+}
+
+let vecMinus = (a, b) => {
+    if (a.length != b.length) {
+        throw "Sizes don't match!";
+    }
+    let ret = [];
+    for(var i = 0; i < a.length; i++) {
+        ret.push(a[i] - b[i]);
+    }
+    return ret;
+}
+
+// Counterclockwise
+// return a 3d-vec, (n1, n2, n3)
+let triangleNormal = (a, b, c) => {
+    let n1 = vecMinus(b, a);
+    let n2 = vecMinus(c, b);
+
+    let x = n2[2]*n1[1] - n2[1]*n1[2];
+    let y = n2[0]*n1[2] - n1[0]*n2[2];
+    let z = n1[0]*n2[1] - n2[0]*n1[1];
+
+    return normalize([x, y, z]);
+}
+
+let createOctahedron = () => {
+    let v = [];
+    
+    let addVertex = (a, an) => {
+       for (let i = 0 ; i < a.length ; i++)
+          v.push(a[i]);
+        for (let i = 0 ; i < an.length ; i++)
+          v.push(an[i]);
+    }
+
+    let addTriangle = (a, b, c) => {
+        let n = triangleNormal(a, b, c);
+        addVertex(a, n);
+        addVertex(c, n);
+        addVertex(c, n);
+    }
+
+    let AddPyramid = (t, a, b, c, d) => {
+        addTriangle(t, a, b);
+        addTriangle(t, b, c);
+        addTriangle(t, c, d);
+        addTriangle(t, d, a);
+    }
+
+    let t = [[0, 1, 0], [0, -1, 0]];
+    let P = [[0, 0, 1], [1, 0, 0], [0, 0, -1], [-1, 0, 0]];
+
+    AddPyramid(t[0], P[0], P[1], P[2], P[3]);
+    AddPyramid(t[1], P[3], P[2], P[1], P[0]);
+    return v;
+}
+
+let cubeVertices = createCubeVertices();
+let octahedron = createOctahedron();
 
 async function setup(state) {
     hotReloadFile(getPath('week5.js'));
@@ -362,6 +437,9 @@ async function setup(state) {
  ///////////////////////////////////////////////////////////
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( cubeVertices ), gl.STATIC_DRAW);
+
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( octahedron ), gl.STATIC_DRAW);
+
 
     let bpe = Float32Array.BYTES_PER_ELEMENT;
 
@@ -505,7 +583,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
             m.scale(.3,.05,.05);
             gl.uniform3fv(state.uColorLoc, state.color0 );
 
-            gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.05,0.05,0.05]);
+            gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.5,0.,0.5]);
             gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.01,0.01,0.01]);
             gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
             gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
