@@ -522,7 +522,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
           m.translate(side * .3,0,0);
           m.save();
             m.scale(.3,.05,.05);
-            gl.uniform3fv(state.uColorLoc, state.color0 );
+            gl.uniform3fv(state.uColorLoc, [0., 1., 0.]);
         
             gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.03, 0.1, 0.0]);
             gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.05, 0.25, 0.0]);

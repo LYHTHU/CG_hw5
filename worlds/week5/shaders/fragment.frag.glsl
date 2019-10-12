@@ -63,27 +63,22 @@ Ray reflect_ray(Ray rin, vec3 norm){
 
 vec3 phong(vec3 inter_point, int index) {
     vec3 N=get_normal(inter_point);
-    // vec3 color=uMaterials[index].ambient;
-    vec3 color = vec3(0.5, 0., 0.);
+    vec3 color=uMaterials[index].ambient;
     for(int j=0;j<NL;j++){
         Ray L = get_ray(inter_point,lights[j].src);
         Ray E = get_ray(inter_point, eye);
         Ray R = reflect_ray(L, N);
         color += lights[j].rgb*(uMaterials[index].diffuse*max(0.,dot(N,L.dir)));
-        // color += lights[j].rgb*(vec3(0.1, 0., 0.)*max(0.,dot(N,L.dir)));
 
         float s;
         float er = dot(E.dir,R.dir);
         if(er > 0.){
             s = max(0.,exp(uMaterials[index].power*log(er)));
-            // s = max(0., exp(20.*log(er)));
-
         }
         else{
             s = 0.;
         }
         color += lights[j].rgb*uMaterials[index].specular*s;
-        // color += lights[j].rgb*vec3(1., 1., 1.)*s;
     }
     return color;
 }
@@ -101,8 +96,9 @@ void main() {
     //       color = vec3(1.,1.,1.);
 
     // Using way like uColor to set the uMaterials
-
+    
     fragColor = vec4(sqrt(color), 1.0);
+    // fragColor = vec4(sqrt(uColor), 1.0);
 }
 
 
