@@ -309,7 +309,20 @@ async function setup(state) {
                 state.eyeLoc           = gl.getUniformLocation(program, 'eye');
                 state.screenCenterLoc  = gl.getUniformLocation(program, 'screen_center');
 
-                state.lightsLoc = [];                
+                var NS = 1;
+                state.uMaterialsLoc = [];
+                for (var i = 0; i < NS; i++) {
+                    state.uMaterialsLoc[i] = {};
+                    state.uMaterialsLoc[i].diffuse  = gl.getUniformLocation(program, 'uMaterials[' + i + '].diffuse');
+                    state.uMaterialsLoc[i].ambient  = gl.getUniformLocation(program, 'uMaterials[' + i + '].ambient');
+                    state.uMaterialsLoc[i].specular = gl.getUniformLocation(program, 'uMaterials[' + i + '].specular');
+                    state.uMaterialsLoc[i].power    = gl.getUniformLocation(program, 'uMaterials[' + i + '].power');
+                    state.uMaterialsLoc[i].reflectc = gl.getUniformLocation(program, 'uMaterials[' + i + '].reflectc');
+                    state.uMaterialsLoc[i].refraction = gl.getUniformLocation(program, 'uMaterials[' + i + '].refraction');
+                    state.uMaterialsLoc[i].transparent = gl.getUniformLocation(program, 'uMaterials[' + i + '].transparent');
+               
+                    state.lightsLoc = [];         
+                }       
                 for (var i = 0; i < 3; i++) {
                     state.lightsLoc[i] = {};
                     state.lightsLoc[i].src = gl.getUniformLocation(program, 'lights[' + i + '].src');
@@ -436,6 +449,14 @@ function onStartFrame(t, state) {
 
     gl.uniform3fv(state.eyeLoc, [0., 0., 5.]);
     gl.uniform3fv(state.screenCenterLoc, [0., 0., 2.5]);
+
+    gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.05,0.05,0.05]);
+    gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.01,0.01,0.01]);
+    gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
+    gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
+    gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
+    gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
+    gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
     gl.uniform3fv(state.lightsLoc[0].src, [2.*Math.sin(time), 2.*Math.cos(time), -.5]);
     gl.uniform3fv(state.lightsLoc[0].rgb, [1., 1., 1.]);
