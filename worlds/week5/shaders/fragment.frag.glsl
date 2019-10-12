@@ -9,9 +9,14 @@ in vec2 vXY;           // POSITION ON IMAGE
 in vec3 vPos;          // POSITION
 in vec3 vNor;          // NORMAL
 
+uniform vec3 eye ; 
+uniform vec3 screen_center; 
+
+
 out vec4 fragColor;    // RESULT WILL GO HERE
 
 const int NL = 3;
+const int NS = 2;
 
 struct Light{
     vec3 rgb; 
@@ -33,35 +38,49 @@ Ray get_ray(vec3 p_src, vec3 p_dest){
 }
 
 vec3 get_normal(vec3 pos) { 
-    // TODO
-    return normalize(vec3(1., 0., 0.));
+    return normalize(vNor);
 }
 
-// vec3 phong(vec3 inter_point) {
-//     vec3 N=get_normal(inter_point);
-//     vec3 color=uMaterials[index].ambient;
-//     for(int j=0;j<NL;j++){
-//         Ray L = get_ray(inter_point,lights[j].src);
-//         Ray E = get_ray(inter_point,eye);
-//         Ray R = reflect_ray(L,N);
-//         color += lights[j].rgb*(uMaterials[index].diffuse*max(0.,dot(N,L.dir)));
-//         float s;
-//         float er = dot(E.dir,R.dir);
-//         if(er > 0.){
-//             s = max(0.,exp(uMaterials[index].power*log(er)));
-//         }
-//         else{
-//             s = 0.;
-//         }
-//         color += lights[j].rgb*uMaterials[index].specular*s;
-//     }
-//     return color;
-// }
+Ray reflect_ray(Ray rin, vec3 norm){
+    Ray ret; 
+    ret.src = rin.src; 
+    ret.dir = normalize(2.*dot(norm, rin.dir)*norm - rin.dir); 
+    return ret; 
+}
+
+
+vec3 phong(vec3 inter_point) {
+    vec3 N=get_normal(inter_point);
+    // vec3 color=uMaterials[index].ambient;
+    vec3 color = vec3(0.5, 0., 0.);
+    for(int j=0;j<NL;j++){
+        Ray L = get_ray(inter_point,lights[j].src);
+        Ray E = get_ray(inter_point, eye);
+        Ray R = reflect_ray(L, N);
+        // color += lights[j].rgb*(uMaterials[index].diffuse*max(0.,dot(N,L.dir)));
+        color += lights[j].rgb*(vec3(0.1, 0., 0.)*max(0.,dot(N,L.dir)));
+
+        float s;
+        float er = dot(E.dir,R.dir);
+        if(er > 0.){
+            // s = max(0.,exp(uMaterials[index].power*log(er)));
+            s = max(0., exp(20.*log(er)));
+
+        }
+        else{
+            s = 0.;
+        }
+        // color += lights[j].rgb*uMaterials[index].specular*s;
+        color += lights[j].rgb*vec3(1., 1., 1.)*s;
+    }
+    return color;
+}
 
 void main() {
     vec3 lDir  = vec3(.57,.57,.57);
     vec3 shade = vec3(.1,.1,.1) + vec3(1.,1.,1.) * max(0., dot(lDir, normalize(vNor)));
-    vec3 color = shade;
+    // vec3 color = shade;
+    vec3 color = phong(vPos);
     // only changed if light is intersect to the object    
 
     // HIGHLIGHT CURSOR POSITION WHILE MOUSE IS PRESSED

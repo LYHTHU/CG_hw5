@@ -306,6 +306,9 @@ async function setup(state) {
                 state.uTimeLoc         = gl.getUniformLocation(program, 'uTime');
                 state.uViewLoc         = gl.getUniformLocation(program, 'uView');
 
+                state.eyeLoc           = gl.getUniformLocation(program, 'eye');
+                state.screenCenterLoc  = gl.getUniformLocation(program, 'screen_center');
+
                 state.lightsLoc = [];                
                 for (var i = 0; i < 3; i++) {
                     state.lightsLoc[i] = {};
@@ -429,6 +432,10 @@ function onStartFrame(t, state) {
     var time = state.time;
 
     gl.uniform1f (state.uTimeLoc  , state.time);
+
+
+    gl.uniform3fv(state.eyeLoc, [0., 0., 5.]);
+    gl.uniform3fv(state.screenCenterLoc, [0., 0., 2.5]);
 
     gl.uniform3fv(state.lightsLoc[0].src, [2.*Math.sin(time), 2.*Math.cos(time), -.5]);
     gl.uniform3fv(state.lightsLoc[0].rgb, [1., 1., 1.]);
