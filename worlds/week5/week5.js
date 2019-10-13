@@ -308,8 +308,6 @@ let createOctahedron = () => {
     return v;
 }
 
-let cubeVertices = createCubeVertices();
-let octahedron = createOctahedron();
 
 async function setup(state) {
     hotReloadFile(getPath('week5.js'));
@@ -436,13 +434,23 @@ async function setup(state) {
 //                                                         //
  ///////////////////////////////////////////////////////////
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( cubeVertices ), gl.STATIC_DRAW);
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( cubeVertices ), gl.STATIC_DRAW);
 
    
 
 
     let bpe = Float32Array.BYTES_PER_ELEMENT;
-
+// 
+    let VCube = new Float32Array(createCubeVertices());
+    let VPoly = new Float32Array(createOctahedron());
+    state.VCube = VCube;
+    state.VPoly = VPoly;
+    gl.bufferData(gl.ARRAY_BUFFER, 
+        new Float32Array(VPoly.length + VCube.length), 
+        gl.STATIC_DRAW, 0);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, VPoly, 0);
+    gl.bufferSubData(gl.ARRAY_BUFFER, VPoly.length * bpe, VCube, 0);
+// 
     let aPos = gl.getAttribLocation(state.program, 'aPos');
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, bpe * VERTEX_SIZE, bpe * 0);
@@ -553,21 +561,13 @@ function onStartFrame(t, state) {
     gl.enable(gl.DEPTH_TEST);
 }
 
-function onDraw(t, projMat, viewMat, state, eyeIdx) {
+// 
 
-
+// 
+function addToptoy(state) {
     let m = state.m;
-
-    gl.uniformMatrix4fv(state.uViewLoc, false, new Float32Array(viewMat));
-    gl.uniformMatrix4fv(state.uProjLoc, false, new Float32Array(projMat));
-
-
- //////////////////////////////////////////////////////////////////////
-//                                                                    //
-//  THIS IS THE EXAMPLE OF TWO WAVING ARMS THAT WE CREATED IN CLASS.  //
-//  FOR HOMEWORK, YOU WILL WANT TO DO SOMETHING DIFFERENT.            //
-//                                                                    //
- //////////////////////////////////////////////////////////////////////
+    let VPoly = state.VPoly;
+    let VCube = state.VCube;
 
     m.save();
     m.identity();
@@ -579,9 +579,8 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
 
     m.save();
-        m.scale(.9,.05,.9);
+        m.scale(.9,.5,.9);
         m.rotateY(state.time);
-        // gl.uniform3fv(state.uColorLoc, state.color0 );
         gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
@@ -590,8 +589,31 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
         gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
-        gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+        m.translate(Math.sin(state.time) * 2.0, 0, Math.cos(state.time));
+        gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
+        gl.drawArrays(gl.TRIANGLES, 0, VPoly.length / VERTEX_SIZE);
+
+    m.save();
+        m.scale(.9,.5,.9);
+        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
+        gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
+        gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
+        gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
+        gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
+
+        m.translate(5.0, Math.cos(state.time) * 5.0, 0);
+        gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
+        gl.drawArrays(gl.TRIANGLES, VPoly.length / VERTEX_SIZE, VCube.length / VERTEX_SIZE);
+    m.restore();
+
+        // gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+        // let VPoly = createOctahedron();
+        // let VCube = createCubeVertices();
+        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(VPoly.length + VCube.length), gl.STATIC_DRAW, 0);
+        // gl.bufferSubData(gl.ARRAY_BUFFER, 0, VPoly, 0);
+        // gl.bufferSubData(gl.ARRAY_BUFFER, VPoly.length * bpe, VCube, 0);
 
         m.save();
             gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.,0.37,0.]);
@@ -605,7 +627,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
             m.translate(0, 2 + 20*Math.abs(Math.cos(5*state.time)), 0);
             gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-            gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+            // gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
         m.restore();
 
     m.restore();
@@ -624,7 +646,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
     m.save();
@@ -642,7 +664,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
     m.save();
@@ -660,7 +682,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
     m.save();
@@ -678,16 +700,39 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
+    m.restore();
+}
 
-    m.restore();
+function addWheel(state) {
+
+}
+
+function onDraw(t, projMat, viewMat, state, eyeIdx) {
+
+
+    let m = state.m;
+    let VCube = state.VCube;
+    let VPoly = state.VPoly;
+
+    gl.uniformMatrix4fv(state.uViewLoc, false, new Float32Array(viewMat));
+    gl.uniformMatrix4fv(state.uProjLoc, false, new Float32Array(projMat));
+
+
+ //////////////////////////////////////////////////////////////////////
+//                                                                    //
+//  THIS IS THE EXAMPLE OF TWO WAVING ARMS THAT WE CREATED IN CLASS.  //
+//  FOR HOMEWORK, YOU WILL WANT TO DO SOMETHING DIFFERENT.            //
+//                                                                    //
+ //////////////////////////////////////////////////////////////////////
+
+    addToptoy(state);
     
     var bpe = Float32Array.BYTES_PER_ELEMENT;
 
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(octahedron), gl.STATIC_DRAW, cubeVertices.length * bpe);
     // gl.drawArrays(gl.TRIANGLES, 36, octahedron.length / VERTEX_SIZE);
-
 }
 
 function onEndFrame(t, state) {
