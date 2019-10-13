@@ -691,18 +691,26 @@ function addOct(state) {
     m.translate(0., 0., -6);
 
     m.save();
-        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.1,0.37,0.]);
-        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.1,0.37,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.1,0.5,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.1,0.5,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
         gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
         gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
         gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
-        m.scale(.9,.5,.9);
-        m.translate(2.0, Math.cos(state.time) * 5.0, 0);
+        m.scale(.1,.3,.1);
+        m.translate(3.0, 4.0, 0);
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
         gl.drawArrays(gl.TRIANGLES, VCube.length / VERTEX_SIZE, VPoly.length / VERTEX_SIZE);
+        
+        m.save();
+            m.scale(1.,1.,1.);
+            m.translate(0, -2, 0);
+            m.rotateZ(0.6);
+            gl.uniformMatrix4fv(state.uModelLoc, false, m.value()); 
+            gl.drawArrays(gl.TRIANGLES, VCube.length / VERTEX_SIZE, VPoly.length / VERTEX_SIZE);
+        m.restore();
     m.restore();
     m.restore();
 }
