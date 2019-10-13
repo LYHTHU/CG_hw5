@@ -448,8 +448,8 @@ async function setup(state) {
     gl.bufferData(gl.ARRAY_BUFFER, 
         new Float32Array(VPoly.length + VCube.length), 
         gl.STATIC_DRAW, 0);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, VPoly, 0);
-    gl.bufferSubData(gl.ARRAY_BUFFER, VPoly.length * bpe, VCube, 0);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, VCube, 0);
+    gl.bufferSubData(gl.ARRAY_BUFFER, VCube.length * bpe, VPoly, 0);
 // 
     let aPos = gl.getAttribLocation(state.program, 'aPos');
     gl.enableVertexAttribArray(aPos);
@@ -590,31 +590,9 @@ function addToptoy(state) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         m.translate(Math.sin(state.time) * 2.0, 0, Math.cos(state.time));
-        gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
-        gl.drawArrays(gl.TRIANGLES, 0, VPoly.length / VERTEX_SIZE);
-
-    m.save();
-        m.scale(.9,.5,.9);
-        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
-        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
-        gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
-        gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
-        gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
-        gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
-        gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
-
-        m.translate(5.0, Math.cos(state.time) * 5.0, 0);
-        gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
-        gl.drawArrays(gl.TRIANGLES, VPoly.length / VERTEX_SIZE, VCube.length / VERTEX_SIZE);
-    m.restore();
-
-        // gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
-        // let VPoly = createOctahedron();
-        // let VCube = createCubeVertices();
-        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(VPoly.length + VCube.length), gl.STATIC_DRAW, 0);
-        // gl.bufferSubData(gl.ARRAY_BUFFER, 0, VPoly, 0);
-        // gl.bufferSubData(gl.ARRAY_BUFFER, VPoly.length * bpe, VCube, 0);
-
+        // gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
+        // gl.drawArrays(gl.TRIANGLES, 0, VPoly.length / VERTEX_SIZE);
+    
         m.save();
             gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.,0.37,0.]);
             gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.,0.37,0.]);
@@ -627,16 +605,15 @@ function addToptoy(state) {
 
             m.translate(0, 2 + 20*Math.abs(Math.cos(5*state.time)), 0);
             gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-            // gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+            gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
         m.restore();
-
     m.restore();
+
     m.save();
         m.scale(.7, .05, .7);
         m.rotateY(2*state.time);
         m.translate(0., -2.0, 0.);
 
-        // gl.uniform3fv(state.uColorLoc, [0., 1., 0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.0, 0.4, 0.4]);
         gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.0, 0.25, 0.25]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [1.,1.,1.]);
@@ -646,7 +623,7 @@ function addToptoy(state) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+        gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
     m.save();
@@ -654,7 +631,6 @@ function addToptoy(state) {
         m.rotateY(3*state.time);
         m.translate(0., -4.0, 0.);
 
-        // gl.uniform3fv(state.uColorLoc, [0., 1., 0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.03, 0.1, 0.0]);
         gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.05, 0.25, 0.0]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [1.,1.,1.]);
@@ -664,7 +640,7 @@ function addToptoy(state) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+        gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
     m.save();
@@ -682,7 +658,7 @@ function addToptoy(state) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+        gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
     m.save();
@@ -690,7 +666,7 @@ function addToptoy(state) {
         m.rotateY(4*state.time);
         m.translate(0., -8.0, 0.);
 
-        // gl.uniform3fv(state.uColorLoc, [0., 1., 0.]);
+        gl.uniform3fv(state.uColorLoc, [0., 1., 0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.36, 0., 0.4]);
         gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.36, 0., 0.4]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [1.,1.,1.]);
@@ -700,7 +676,22 @@ function addToptoy(state) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
-        //gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+        gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+    m.restore();
+
+    m.save();
+        m.scale(.9,.5,.9);
+        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
+        gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
+        gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
+        gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
+        gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
+
+        m.translate(2.0, Math.cos(state.time) * 5.0, 0);
+        gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
+        gl.drawArrays(gl.TRIANGLES, VCube.length / VERTEX_SIZE, VPoly.length / VERTEX_SIZE);
     m.restore();
     m.restore();
 }
