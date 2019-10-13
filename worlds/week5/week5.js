@@ -572,8 +572,9 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     m.save();
     m.identity();
     m.translate(0,0,-6);
+    let scan =0.1*state.time - Math.round(0.1*state.time);
 
-    m.translate(2*Math.cos(state.time),0,2*Math.sin(state.time));
+    m.translate(4*Math.abs(scan)*Math.cos(state.time), 0, 4*Math.abs(scan)*Math.sin(state.time));
     m.rotateZ(0.5*Math.cos(state.time));
 
 
