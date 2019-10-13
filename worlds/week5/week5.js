@@ -579,8 +579,7 @@ function addToptoy(state) {
 
 
     m.save();
-        m.scale(.9,.5,.9);
-        m.rotateY(state.time);
+        
         gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
@@ -589,11 +588,15 @@ function addToptoy(state) {
         gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
-        m.translate(Math.sin(state.time) * 2.0, 0, Math.cos(state.time));
-        // gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
-        // gl.drawArrays(gl.TRIANGLES, 0, VPoly.length / VERTEX_SIZE);
-    
+        m.scale(.9, .05, .9);
+        m.rotateY(state.time);
+        m.translate(Math.sin(state.time), 0, Math.cos(state.time));
+
+        gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
+        gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+        
         m.save();
+        // jumping
             gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.,0.37,0.]);
             gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.,0.37,0.]);
             gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
@@ -602,10 +605,10 @@ function addToptoy(state) {
             gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
             gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
             m.scale(0.1,1,-.1);
-
             m.translate(0, 2 + 20*Math.abs(Math.cos(5*state.time)), 0);
             gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
             gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
+
         m.restore();
     m.restore();
 
