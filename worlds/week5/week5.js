@@ -289,7 +289,7 @@ let createOctahedron = () => {
     let addTriangle = (a, b, c) => {
         let n = triangleNormal(a, b, c);
         addVertex(a, n);
-        addVertex(c, n);
+        addVertex(b, n);
         addVertex(c, n);
     }
 
@@ -555,6 +555,7 @@ function onStartFrame(t, state) {
 
 function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
+
     let m = state.m;
 
     gl.uniformMatrix4fv(state.uViewLoc, false, new Float32Array(viewMat));
@@ -593,6 +594,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
             gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
             gl.drawArrays(gl.TRIANGLES, 0, cubeVertices.length / VERTEX_SIZE);
+
           m.restore();
 
           m.translate(side * .3,0,0);
@@ -617,6 +619,10 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     }
 
     m.restore();
+
+    gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
+    // gl.drawArrays(gl.TRIANGLES, 0, octahedron / VERTEX_SIZE);
+
 }
 
 function onEndFrame(t, state) {
