@@ -577,9 +577,7 @@ function addToptoy(state) {
     m.translate(4*Math.abs(scan)*Math.cos(state.time), 0, 4*Math.abs(scan)*Math.sin(state.time));
     m.rotateZ(0.5*Math.cos(state.time));
 
-
     m.save();
-        
         gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
@@ -588,7 +586,7 @@ function addToptoy(state) {
         gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
-        m.scale(.9, .05, .9);
+        m.scale(.9, .1, .9);
         m.rotateY(state.time);
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
@@ -612,7 +610,7 @@ function addToptoy(state) {
     m.restore();
 
     m.save();
-        m.scale(.7, .05, .7);
+        m.scale(.7, .1, .7);
         m.rotateY(2*state.time);
         m.translate(0., -2.0, 0.);
 
@@ -629,7 +627,7 @@ function addToptoy(state) {
     m.restore();
 
     m.save();
-        m.scale(.5, .05, .5);
+        m.scale(.5, .1, .5);
         m.rotateY(3*state.time);
         m.translate(0., -4.0, 0.);
 
@@ -646,7 +644,7 @@ function addToptoy(state) {
     m.restore();
 
     m.save();
-        m.scale(.3, .05, .3);
+        m.scale(.3, .1, .3);
         m.rotateY(4*state.time);
         m.translate(0., -6.0, 0.);
 
@@ -664,7 +662,7 @@ function addToptoy(state) {
     m.restore();
 
     m.save();
-        m.scale(.1, .05, .1);
+        m.scale(.1, .1, .1);
         m.rotateY(4*state.time);
         m.translate(0., -8.0, 0.);
 
@@ -681,25 +679,32 @@ function addToptoy(state) {
         gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
     m.restore();
 
+    m.restore();
+}
+
+function addOct(state) {
+    let m = state.m;
+    let VPoly = state.VPoly;
+    let VCube = state.VCube;
     m.save();
-        m.scale(.9,.5,.9);
-        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [1.,0.37,0.]);
-        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [1.,0.37,0.]);
+    m.identity();
+    m.translate(0., 0., -6);
+
+    m.save();
+        gl.uniform3fv(state.uMaterialsLoc[0].ambient , [0.1,0.37,0.]);
+        gl.uniform3fv(state.uMaterialsLoc[0].diffuse , [0.1,0.37,0.]);
         gl.uniform3fv(state.uMaterialsLoc[0].specular, [0.,1.,1.]);
         gl.uniform1f (state.uMaterialsLoc[0].power   , 20.);
         gl.uniform3fv(state.uMaterialsLoc[0].reflectc , [1.0,1.0,1.0]);
         gl.uniform3fv(state.uMaterialsLoc[0].transparent, [0.5,0.5,0.5]);
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
+        m.scale(.9,.5,.9);
         m.translate(2.0, Math.cos(state.time) * 5.0, 0);
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
         gl.drawArrays(gl.TRIANGLES, VCube.length / VERTEX_SIZE, VPoly.length / VERTEX_SIZE);
     m.restore();
     m.restore();
-}
-
-function addWheel(state) {
-
 }
 
 function onDraw(t, projMat, viewMat, state, eyeIdx) {
@@ -721,11 +726,11 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
  //////////////////////////////////////////////////////////////////////
 
     addToptoy(state);
+
+    addOct(state);
     
     var bpe = Float32Array.BYTES_PER_ELEMENT;
 
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(octahedron), gl.STATIC_DRAW, cubeVertices.length * bpe);
-    // gl.drawArrays(gl.TRIANGLES, 36, octahedron.length / VERTEX_SIZE);
 }
 
 function onEndFrame(t, state) {
