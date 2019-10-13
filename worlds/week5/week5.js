@@ -438,7 +438,7 @@ async function setup(state) {
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( cubeVertices ), gl.STATIC_DRAW);
 
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( octahedron ), gl.STATIC_DRAW);
+   
 
 
     let bpe = Float32Array.BYTES_PER_ELEMENT;
@@ -577,8 +577,12 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
        let theta = Math.sin(3 * state.time) * side;
        m.save();
           m.translate(side * .3,0,0);
-          m.rotateZ(theta);               // SHOULDER
+        //   m.rotateZ(theta);               // SHOULDER
+
+          m.rotateZ(state.time);               // SHOULDER
+
           m.rotateY(-side + .5 * theta);
+
           m.translate(side * .3,0,0);
           m.save();
             m.scale(.3,.05,.05);
@@ -598,7 +602,10 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
           m.restore();
 
           m.translate(side * .3,0,0);
-          m.rotateZ(theta);              // ELBOW
+        //   m.rotateZ(theta);              // ELBOW
+
+          m.rotateZ(state.time);              // ELBOW
+
           m.translate(side * .3,0,0);
           m.save();
             m.scale(.3,.05,.05);
@@ -620,7 +627,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
     m.restore();
 
-    gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array( octahedron ), gl.STATIC_DRAW);
     // gl.drawArrays(gl.TRIANGLES, 0, octahedron / VERTEX_SIZE);
 
 }
