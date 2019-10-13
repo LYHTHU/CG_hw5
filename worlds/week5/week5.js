@@ -590,7 +590,6 @@ function addToptoy(state) {
 
         m.scale(.9, .05, .9);
         m.rotateY(state.time);
-        m.translate(Math.sin(state.time), 0, Math.cos(state.time));
 
         gl.uniformMatrix4fv(state.uModelLoc, false, m.value() );
         gl.drawArrays(gl.TRIANGLES, 0, VCube.length / VERTEX_SIZE);
