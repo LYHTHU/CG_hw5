@@ -702,7 +702,7 @@ function addOct(state) {
         gl.uniform1f (state.uMaterialsLoc[0].refraction   , 1.5);
 
         m.rotateZ(Math.cos(state.time));
-        m.translate(0, 4.0 * scan, 0);
+        m.translate(-1, 4.0 * scan, 0);
 
         m.rotateY(3*state.time);
         m.scale(.2, .4, .2);
